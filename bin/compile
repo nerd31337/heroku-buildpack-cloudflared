@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
 
 echo "Set Cloudflared Service init"
-cloudflared service install $CLOUDFLARED_TOKEN`
+cloudflared service install $CLOUDFLARED_TOKEN
+exit 0
