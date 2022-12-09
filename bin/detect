@@ -1,10 +1,22 @@
 #!/usr/bin/env bash
-# bin/detect <build-dir>
 
-if [ -f $1/Aptfile ]; then
-  echo "Apt"
+export_env_dir() {
+  env_dir=$1
+  acceptlist_regex=${2:-'^(CLOUDFLARED_TOKEN)$'}
+  denylist_regex=${3:-'^(PATH|GIT_DIR|CPATH|CPPATH|LD_PRELOAD|LIBRARY_PATH)$'}
+  if [ -d "$env_dir" ]; then
+    for e in $(ls $env_dir); do
+      echo "$e" | grep -E "$acceptlist_regex" | grep -qvE "$denylist_regex" &&
+      export "$e=$(cat $env_dir/$e)"
+      :
+    done
+  fi
+}
+
+if [[ -z "${CLOUDFLARED_TOKEN}" ]]; then
+  echo "Set Cloudflared Init"
   exit 0
 else
-  echo "Could not find an 'Aptfile'! Please ensure it exists and is checked into Git." >&2
+  echo "Set CLOUDFLARED_TOKEN to load cloudflared"
   exit 1
 fi
